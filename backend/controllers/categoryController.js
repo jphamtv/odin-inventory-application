@@ -1,7 +1,7 @@
 // controllers/categoryController.js
 const Category = require('../models/category');
 
-exports.getAllCategories = async(req, res) => {
+async function getAllCategories(req, res) {
   try {
     const categories = await Category.getAll();
     res.json(categories);
@@ -9,9 +9,9 @@ exports.getAllCategories = async(req, res) => {
     console.error('Error fetching categories', error);
     res.status(500).json({ error: "Internal server error" });
   }
-};
+}
 
-exports.getCategoryById = async (req, res) => {
+async function getCategoryById(req, res) {
   try {
     const categoryId = req.params.id;
     const category = await Category.getById(categoryId);
@@ -24,9 +24,9 @@ exports.getCategoryById = async (req, res) => {
     console.error('Error fetching category: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.createCategory = async (req, res) => {
+async function createCategory(req, res) {
   try {
     const { name, description } = req.body;
     const newCategory = await Category.insertNew({ name, description });
@@ -35,9 +35,9 @@ exports.createCategory = async (req, res) => {
     console.error('Error creating category:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.updateCategory = async (req, res) => {
+async function updateCategory(req, res) {
   try {
     const categoryId = req.params.id;    
     const { name, description } = req.body;
@@ -51,9 +51,9 @@ exports.updateCategory = async (req, res) => {
     console.error('Error updating category: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.deleteCategory = async (req, res) => {
+async function deleteCategory(req, res) {
   try {
     const categoryId = req.params.id; 
     const deleted = await Category.deleteById(categoryId); // deleted is boolean value
@@ -66,4 +66,12 @@ exports.deleteCategory = async (req, res) => {
     console.error('Error deleting category: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+module.exports = {
+  getAllCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 };
