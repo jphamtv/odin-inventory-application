@@ -1,7 +1,7 @@
 // controllers/itemController.js
 const Item = require('../models/item');
 
-exports.getAllItems = async (req, res) => {
+async function getAllItems(req, res) {
   try {
     const items = await Item.getAll();
     res.json(items);
@@ -9,9 +9,9 @@ exports.getAllItems = async (req, res) => {
     console.error('Error fetching items', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.getItemById = async (req, res) => {
+async function getItemById(req, res) {
   try {
     const itemId = req.params.id;
     const item = await Item.getById(itemId);
@@ -24,9 +24,9 @@ exports.getItemById = async (req, res) => {
     console.error('Error fetching item: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.getItemsByCategoryId = async (req, res) => {
+async function getItemsByCategoryId(req, res) {
   try {
     const categoryId = req.params.id;
     const items = await Item.getByCategoryId(categoryId);
@@ -39,9 +39,9 @@ exports.getItemsByCategoryId = async (req, res) => {
     console.error('Error fetching items by category: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.createItem = async (req, res) => {
+async function createItem(req, res) {
   try {
     const { artist, title, label, year, genre } = req.body;
     const newItem = await Item.insertNew({ artist, title, label, year, genre });
@@ -50,9 +50,9 @@ exports.createItem = async (req, res) => {
     console.error('Error creating item:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.updateItem = async (req, res) => {
+async function updateItem(req, res) {
   try {
     const itemId = req.params.id;    
     const { artist, title, label, year, genre } = req.body;
@@ -66,9 +66,9 @@ exports.updateItem = async (req, res) => {
     console.error('Error updating item: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-};
+}
 
-exports.deleteItem = async (req, res) => {
+async function deleteItem(req, res) {
   try {
     const itemId = req.params.id; 
     const deleted = await Item.deleteById(itemId); // deleted is boolean value
@@ -81,4 +81,13 @@ exports.deleteItem = async (req, res) => {
     console.error('Error deleting item: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+module.exports = {
+  getAllItems,
+  getItemById,
+  getItemsByCategoryId,
+  createItem,
+  updateItem,
+  deleteItem,
 };
