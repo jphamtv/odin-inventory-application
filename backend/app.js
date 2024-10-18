@@ -13,8 +13,14 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/', categoriesRouter);
-app.use('/', itemsRouter);
+app.use('/categories', categoriesRouter);
+app.use('/items', itemsRouter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong' });
+});
 
 // Basic routing for testing
 app.get('/', (req, res) => {
