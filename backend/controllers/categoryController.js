@@ -1,5 +1,17 @@
 // controllers/categoryController.js
 const Category = require('../models/category');
+const { body, validationResult } = require('express-validator');
+
+const validateCategory = [
+  body('name').trim()
+    .isLength({ min: 1, max: 200 }).withMessage(`Name must be between 1 and 200 characters`)
+    .matches(/^[a-zA-Z0-9 ]+$/).withMessage('Name can only contain letters, numbers, and spaces'),
+  body('description').trim()
+    .optional()
+    .isLength({ max: 200 }).withMessage(`Description must not exceed 200 characters`)
+    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Bio contains invalid characters')
+    .escape()
+];
 
 async function getAllCategories(req, res) {
   try {
@@ -28,6 +40,13 @@ async function getCategoryById(req, res) {
 
 async function createCategory(req, res) {
   try {
+    await Promise.all(validateCategory.map(validation => validation.run(req)));
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array });
+    }
+
     const { name, description } = req.body;
     const newCategory = await Category.insertNew({ name, description });
     res.status(201).json({ message: 'Category created successfully', category: newCategory });
@@ -37,6 +56,7 @@ async function createCategory(req, res) {
   }
 }
 
+// TODO: UPDATE THIS TO VALIDATE INPUT
 async function updateCategory(req, res) {
   try {
     const categoryId = req.params.id;    
@@ -71,6 +91,7 @@ async function deleteCategory(req, res) {
 module.exports = {
   getAllCategories,
   getCategoryById,
+  validateCategory,
   createCategory,
   updateCategory,
   deleteCategory,
