@@ -7,7 +7,7 @@ exports.getAllItems = async (req, res) => {
     res.json(items);
   } catch (error) {
     console.error('Error fetching items', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -26,6 +26,21 @@ exports.getItemById = async (req, res) => {
   }
 };
 
+exports.getItemsByCategoryId = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+    const items = await Item.getByCategoryId(categoryId);
+    if (items && items.length > 0) {
+      res.json(items);
+    } else {
+      res.status(404).json({ message: 'No items found for this category' });
+    }
+  } catch (error) {
+    console.error('Error fetching items by category: ', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 exports.createItem = async (req, res) => {
   try {
     const { artist, title, label, year, genre } = req.body;
@@ -37,35 +52,33 @@ exports.createItem = async (req, res) => {
   }
 };
 
-// CONTINUE HERE
-
 exports.updateItem = async (req, res) => {
   try {
-    const categoryId = req.params.id;    
-    const { name, description } = req.body;
-    const updatedCategory = await Category.updateById(categoryId, { name, description });
-    if (updatedCategory) {
-      res.json({ message: 'Category updated successfully', category: updatedCategory });
+    const itemId = req.params.id;    
+    const { artist, title, label, year, genre } = req.body;
+    const updatedItem = await Item.updateById(itemId, { artist, title, label, year, genre });
+    if (updatedItem) {
+      res.json({ message: 'Item updated successfully', item: updatedItem });
     } else {
-      res.status(404).json({ message: 'Category not found' });
+      res.status(404).json({ message: 'Item not found' });
     }
   } catch (error) {
-    console.error('Error updating category: ', error);
+    console.error('Error updating item: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 exports.deleteItem = async (req, res) => {
   try {
-    const categoryId = req.params.id; 
-    const deleted = await Category.deleteById(categoryId); // deleted is boolean value
+    const itemId = req.params.id; 
+    const deleted = await Item.deleteById(itemId); // deleted is boolean value
     if (deleted) {
-      res.json({ message: 'Category deleted successfully' });
+      res.json({ message: 'Item deleted successfully' });
     } else {
-      res.status(404).json({ message: 'Category not found' });
+      res.status(404).json({ message: 'Item not found' });
     }
   } catch (error) {
-    console.error('Error deleting category: ', error);
+    console.error('Error deleting item: ', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
