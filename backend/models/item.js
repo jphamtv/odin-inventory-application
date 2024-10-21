@@ -30,22 +30,44 @@ async function getByCategory(categoryId) {
   return rows || null;
 }
 
-async function insertNew({ artist, title, label, year, category_id }) {
+async function insertNew({ artist, title, label, year, quantity, price, category_id }) {
   const { rows } = await db.query(`
-    INSERT INTO items (artist, title, label, year, category_id)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO items (artist, title, label, year, quantity, price, category_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
-    `, [artist, title, label, year, category_id]
+    `, [artist, title, label, year, quantity, price, category_id]
   );
   return rows[0];
 }
 
-async function updateById(id, { artist, title, label, year, category_id }) {
+async function updateById(id, { artist, title, label, year, quantity, price, category_id }) {
   const { rows } = await db.query(`
-    UPDATE items SET artist = $1, title = $2, label = $3, year = $4, category_id = $5
-    WHERE id = $6
+    UPDATE items SET artist = $1, title = $2, label = $3, year = $4, quantity = $5, price = $6, category_id = $7
+    WHERE id = $8
     RETURNING *
-    `, [artist, title, label, year, category_id, id]
+    `, [artist, title, label, year, quantity, price, category_id, id]
+  );
+  return rows[0] || null;
+}
+
+async function adjustQuantity(id, adjustment) {
+  const { rows } = await db.query(`
+    UPDATE items
+    SET quantity = GREATEST(quantity + $1, 0)
+    WHERE id = $2
+    RETURNING *
+    `, [adjustment, id]
+  );
+  return rows[0] || null;
+}
+
+async function updatePrice(id, newPrice) {
+  const { rows } = await db.query(`
+    UPDATE items
+    SET price = $1
+    WHERE id = $2
+    RETURNING *
+    `, [newPrice, id]
   );
   return rows[0] || null;
 }
@@ -64,5 +86,7 @@ module.exports = {
   getByCategory,
   insertNew,
   updateById,
+  adjustQuantity,
+  updatePrice,
   deleteById,
 };
