@@ -38,40 +38,48 @@ async function getCategoryById(req, res) {
   }
 }
 
-async function createCategory(req, res) {
-  try {
-    await Promise.all(validateCategory.map(validation => validation.run(req)));
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array });
+const createCategory = [
+  validateCategory,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+  
+      const { name, description } = req.body;
+      const newCategory = await Category.insertNew({ name, description });
+      res.status(201).json({ message: 'Category created successfully', category: newCategory });
+    } catch (error) {
+      console.error('Error creating category:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-
-    const { name, description } = req.body;
-    const newCategory = await Category.insertNew({ name, description });
-    res.status(201).json({ message: 'Category created successfully', category: newCategory });
-  } catch (error) {
-    console.error('Error creating category:', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-}
+];
 
-// TODO: UPDATE THIS TO VALIDATE INPUT
-async function updateCategory(req, res) {
-  try {
-    const categoryId = req.params.id;    
-    const { name, description } = req.body;
-    const updatedCategory = await Category.updateById(categoryId, { name, description });
-    if (updatedCategory) {
-      res.json({ message: 'Category updated successfully', category: updatedCategory });
-    } else {
-      res.status(404).json({ message: 'Category not found' });
+const updateCategory = [
+  validateCategory,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const categoryId = req.params.id;    
+      const { name, description } = req.body;
+      const updatedCategory = await Category.updateById(categoryId, { name, description });
+      if (updatedCategory) {
+        res.json({ message: 'Category updated successfully', category: updatedCategory });
+      } else {
+        res.status(404).json({ message: 'Category not found' });
+      }
+    } catch (error) {
+      console.error('Error updating category: ', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-  } catch (error) {
-    console.error('Error updating category: ', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-}
+];
 
 async function deleteCategory(req, res) {
   try {
@@ -91,7 +99,6 @@ async function deleteCategory(req, res) {
 module.exports = {
   getAllCategories,
   getCategoryById,
-  validateCategory,
   createCategory,
   updateCategory,
   deleteCategory,
