@@ -18,6 +18,12 @@ const validateItem = [
   body('year')
     .isInt({ min: 1900, max: new Date().getFullYear() })
     .withMessage(`Year must be a 4-digit number between 1900 and the current year`),
+  body('quantity')
+    .isInt({ min: 0 })
+    .withMessage('Quantity must be a non-negative integer'),
+  body('price')
+    .isFloat({ min: 0 })
+    .withMessage('Price must be a non-negative number')
 ];
 
 async function getAllItems(req, res) {
@@ -69,8 +75,8 @@ const createItem = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { artist, title, label, year, category_id } = req.body;
-      const newItem = await Item.insertNew({ artist, title, label, year, category_id });
+      const { artist, title, label, year, quantity, price, category_id } = req.body;
+      const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id });
       res.status(201).json({ message: 'Item created successfully', item: newItem });
     } catch (error) {
       console.error('Error creating item:', error);
@@ -87,10 +93,10 @@ const updateItem = [
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      
+
       const itemId = req.params.id;    
-      const { artist, title, label, year, category_id } = req.body;
-      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, category_id });
+      const { artist, title, label, year, quantity, price, category_id } = req.body;
+      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id });
       if (updatedItem) {
         res.json({ message: 'Item updated successfully', item: updatedItem });
       } else {
@@ -102,6 +108,38 @@ const updateItem = [
     }
   }
 ];
+
+async function adjustItemQuantity(req, res) {
+  try {
+    const itemId = req.params.id;
+    const { adjustment } = req.body;
+    const updatedItem = await Item.adjustQuantity(itemId, adjustment);
+    if (updatedItem) {
+      res.json({ message: 'Item quantity adjusted successfully', item: updateItem });
+    } else {
+      res.status(404).json({ message: 'Item not found' });
+    }
+  } catch (error) {
+    console.error('Error adjusting item quantity: ', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function updateItemPrice(req, res) {
+  try {
+    const itemId = req.params.id;
+    const { price } = req.body;
+    const updatedItem = await Item.adjustQuantity(itemId, price);
+    if (updatedItem) {
+      res.json({ message: 'Item price updated successfully', item: updateItem });
+    } else {
+      res.status(404).json({ message: 'Item not found' });
+    }
+  } catch (error) {
+    console.error('Error updating item price: ', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
 async function deleteItem(req, res) {
   try {
@@ -124,5 +162,7 @@ module.exports = {
   getItemsByCategoryId,
   createItem,
   updateItem,
+  adjustItemQuantity,
+  updateItemPrice,
   deleteItem,
 };
