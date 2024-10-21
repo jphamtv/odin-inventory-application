@@ -129,7 +129,7 @@ async function updateItemPrice(req, res) {
   try {
     const itemId = req.params.id;
     const { price } = req.body;
-    const updatedItem = await Item.adjustQuantity(itemId, price);
+    const updatedItem = await Item.updatePrice(itemId, price);
     if (updatedItem) {
       res.json({ message: 'Item price updated successfully', item: updateItem });
     } else {
