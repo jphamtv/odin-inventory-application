@@ -1,5 +1,24 @@
 // controllers/itemController.js
 const Item = require('../models/item');
+const { body, validationResult } = require('express-validator');
+
+const lengthErr = 'must be between 1 and 200 characters'
+const matchErr = 'contains invalid characters'
+
+const validateItem = [
+  body('artist').trim()
+    .isLength({ min: 1, max: 200 }).withMessage(`Artist name ${lengthErr}`)
+    .matches(/^[a-zA-Z0-9 .,!?'&-]+$/i).withMessage(`Artist name ${matchErr}`),
+  body('title').trim()
+    .isLength({ min: 1, max: 200 }).withMessage(`Title ${lengthErr}`)
+    .matches(/^[a-zA-Z0-9 .,!?'&-]+$/i).withMessage(`Title ${matchErr}`),
+  body('label').trim()
+    .isLength({ min: 1, max: 200 }).withMessage(`Label ${lengthErr}`)
+    .matches(/^[a-zA-Z0-9 .,!?'&-]+$/i).withMessage(`Label ${matchErr}`),
+  body('year')
+    .isInt({ min: 1900, max: new Date().getFullYear() })
+    .withMessage(`Year must be a 4-digit number between 1900 and the current year`),
+];
 
 async function getAllItems(req, res) {
   try {
@@ -41,32 +60,48 @@ async function getItemsByCategoryId(req, res) {
   }
 }
 
-async function createItem(req, res) {
-  try {
-    const { artist, title, label, year, genre } = req.body;
-    const newItem = await Item.insertNew({ artist, title, label, year, genre });
-    res.status(201).json({ message: 'Item created successfully', item: newItem });
-  } catch (error) {
-    console.error('Error creating item:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
+const createItem = [
+  validateItem,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-async function updateItem(req, res) {
-  try {
-    const itemId = req.params.id;    
-    const { artist, title, label, year, genre } = req.body;
-    const updatedItem = await Item.updateById(itemId, { artist, title, label, year, genre });
-    if (updatedItem) {
-      res.json({ message: 'Item updated successfully', item: updatedItem });
-    } else {
-      res.status(404).json({ message: 'Item not found' });
+      const { artist, title, label, year, category_id } = req.body;
+      const newItem = await Item.insertNew({ artist, title, label, year, category_id });
+      res.status(201).json({ message: 'Item created successfully', item: newItem });
+    } catch (error) {
+      console.error('Error creating item:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
-  } catch (error) {
-    console.error('Error updating item: ', error);
-    res.status(500).json({ error: 'Internal server error' });
   }
-}
+];
+
+const updateItem = [
+  validateItem,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      
+      const itemId = req.params.id;    
+      const { artist, title, label, year, category_id } = req.body;
+      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, category_id });
+      if (updatedItem) {
+        res.json({ message: 'Item updated successfully', item: updatedItem });
+      } else {
+        res.status(404).json({ message: 'Item not found' });
+      }
+    } catch (error) {
+      console.error('Error updating item: ', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+];
 
 async function deleteItem(req, res) {
   try {
