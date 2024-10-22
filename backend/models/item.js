@@ -30,22 +30,22 @@ async function getByCategory(categoryId) {
   return rows || null;
 }
 
-async function insertNew({ artist, title, label, year, quantity, price, category_id }) {
+async function insertNew({ artist, title, label, year, quantity, price, category_id, img_url }) {
   const { rows } = await db.query(`
-    INSERT INTO items (artist, title, label, year, quantity, price, category_id)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO items (artist, title, label, year, quantity, price, category_id, img_url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING *
-    `, [artist, title, label, year, quantity, price, category_id]
+    `, [artist, title, label, year, quantity, price, category_id, img_url]
   );
   return rows[0];
 }
 
-async function updateById(id, { artist, title, label, year, quantity, price, category_id }) {
+async function updateById(id, { artist, title, label, year, quantity, price, category_id, img_url }) {
   const { rows } = await db.query(`
-    UPDATE items SET artist = $1, title = $2, label = $3, year = $4, quantity = $5, price = $6, category_id = $7
-    WHERE id = $8
+    UPDATE items SET artist = $1, title = $2, label = $3, year = $4, quantity = $5, price = $6, category_id = $7, img_url = $8
+    WHERE id = $9
     RETURNING *
-    `, [artist, title, label, year, quantity, price, category_id, id]
+    `, [artist, title, label, year, quantity, price, category_id, img_url, id]
   );
   return rows[0] || null;
 }
