@@ -23,7 +23,10 @@ const validateItem = [
     .withMessage('Quantity must be a non-negative integer'),
   body('price')
     .isFloat({ min: 0 })
-    .withMessage('Price must be a non-negative number')
+    .withMessage('Price must be a non-negative number'),
+  body('img_url')
+    .optional()
+    .isURL().withMessage('Image URL must be a valid URL'),
 ];
 
 async function getAllItems(req, res) {
@@ -75,8 +78,8 @@ const createItem = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { artist, title, label, year, quantity, price, category_id } = req.body;
-      const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id });
+      const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
+      const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id, img_url });
       res.status(201).json({ message: 'Item created successfully', item: newItem });
     } catch (error) {
       console.error('Error creating item:', error);
@@ -95,8 +98,8 @@ const updateItem = [
       }
 
       const itemId = req.params.id;    
-      const { artist, title, label, year, quantity, price, category_id } = req.body;
-      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id });
+      const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
+      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id, img_url });
       if (updatedItem) {
         res.json({ message: 'Item updated successfully', item: updatedItem });
       } else {
