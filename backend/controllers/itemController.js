@@ -45,7 +45,7 @@ async function getItemById(req, res) {
     const itemId = req.params.id;
     const item = await Item.getById(itemId);
     if (item) {
-      res.json(transformToCamelCase(items));
+      res.json(transformToCamelCase(item));
     } else {
       res.status(404).json({ message: 'Item not found' });
     }
@@ -55,7 +55,7 @@ async function getItemById(req, res) {
   }
 }
 
-async function getItemsByCategoryId(req, res) {
+async function getItemsByCategory(req, res) {
   try {
     const categoryId = req.params.id;
     const items = await Item.getByCategoryId(categoryId);
@@ -102,7 +102,7 @@ const updateItem = [
       const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
       const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id, img_url });
       if (updatedItem) {
-        res.json({ message: 'Item updated successfully', item: transformToCamelCase(updateItem) });
+        res.json({ message: 'Item updated successfully', item: transformToCamelCase(updatedItem) });
       } else {
         res.status(404).json({ message: 'Item not found' });
       }
@@ -119,7 +119,7 @@ async function adjustItemQuantity(req, res) {
     const { adjustment } = req.body;
     const updatedItem = await Item.adjustQuantity(itemId, adjustment);
     if (updatedItem) {
-      res.json({ message: 'Item quantity adjusted successfully', item: transformToCamelCase(updateItem) });
+      res.json({ message: 'Item quantity adjusted successfully', item: transformToCamelCase(updatedItem) });
     } else {
       res.status(404).json({ message: 'Item not found' });
     }
@@ -135,7 +135,7 @@ async function updateItemPrice(req, res) {
     const { price } = req.body;
     const updatedItem = await Item.updatePrice(itemId, price);
     if (updatedItem) {
-      res.json({ message: 'Item price updated successfully', item: transformToCamelCase(updateItem) });
+      res.json({ message: 'Item price updated successfully', item: transformToCamelCase(updatedItem) });
     } else {
       res.status(404).json({ message: 'Item not found' });
     }
@@ -163,7 +163,7 @@ async function deleteItem(req, res) {
 module.exports = {
   getAllItems,
   getItemById,
-  getItemsByCategoryId,
+  getItemsByCategory,
   createItem,
   updateItem,
   adjustItemQuantity,
