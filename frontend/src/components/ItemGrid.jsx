@@ -1,0 +1,29 @@
+// src/components/ItemGrid.jsx
+import PropTypes from 'prop-types';
+import ItemCard from './ItemCard';
+
+const ItemGrid = ({ items }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {items.map((item) => (
+        <ItemCard key={item.id} item={item} />
+      ))}
+    </div>
+  );
+};
+
+ItemGrid.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      artist: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      quantity: PropTypes.number.isRequired,
+      imageUrl: PropTypes.string,
+    })
+  ).isRequired,
+};
+
+export default ItemGrid;
