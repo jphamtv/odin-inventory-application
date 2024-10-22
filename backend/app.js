@@ -13,8 +13,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/categories', categoriesRouter);
-app.use('/items', itemsRouter);
+app.use('/api/categories', categoriesRouter);
+app.use('/api/items', itemsRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

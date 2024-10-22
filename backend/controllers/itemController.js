@@ -1,7 +1,7 @@
 // controllers/itemController.js
 const Item = require('../models/item');
 const { body, validationResult } = require('express-validator');
-import { transformToCamelCase, transformToSnakeCase } from '../utils/caseTransformer';
+const { transformToCamelCase, transformToSnakeCase } = require('../utils/caseTransformer');
 
 const lengthErr = 'must be between 1 and 200 characters'
 const matchErr = 'contains invalid characters'
@@ -58,7 +58,7 @@ async function getItemById(req, res) {
 async function getItemsByCategory(req, res) {
   try {
     const categoryId = req.params.id;
-    const items = await Item.getByCategoryId(categoryId);
+    const items = await Item.getByCategory(categoryId);
     if (items && items.length > 0) {
       res.json(transformToCamelCase(items));
     } else {
