@@ -1,19 +1,26 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CategoryList from './components/categories/CategoryList';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import Layout from './components/Layout';
+import Header from './components/Header';
+import CategoryForm from './components/CategoryForm';
+import ItemForm from './components/ItemForm';
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-100">
-        <main className="container mx-auto py-8">
-          <Routes>
-            <Route path="/" element={<CategoryList />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <BrowserRouter>
+      <Layout>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/categories/new" element={<CategoryForm />} />
+          <Route path="/categories/:id/edit" element={<CategoryForm />} />
+          <Route path="/items/new" element={<ItemForm />} />
+          <Route path="/items/:id/edit" element={<ItemForm />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
