@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import PropTypes from 'prop-types';
 import CategoryNav from './components/CategoryNav';
 import ItemGrid from './components/ItemGrid';
@@ -14,12 +12,13 @@ const LoadingSpinner = () => (
 );
 
 const ErrorMessage = ({ message }) => (
-  <Alert variant="destructive">
-    <AlertCircle className="h-4 w-4" />
-    <AlertDescription>
-      {message}
-    </AlertDescription>
-  </Alert>
+  <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+    <div className="flex">
+      <div className="ml-3">
+        <p className="text-sm text-red-700">{message}</p>
+      </div>
+    </div>
+  </div>
 );
 
 const HomePage = () => {
