@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import CategoryNav from './components/CategoryNav';
-import ItemGrid from './components/ItemGrid';
-import SortButtons from './components/SortButtons';
-import { api } from './services/api';
+import CategoryNav from './CategoryNav';
+import ItemGrid from './ItemGrid';
+import SortButtons from './SortButtons';
+import { api } from '../services/api';
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center h-32">
