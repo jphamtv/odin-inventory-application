@@ -2,11 +2,15 @@
 import PropTypes from 'prop-types';
 import ItemCard from './ItemCard';
 
-const ItemGrid = ({ items }) => {
+const ItemGrid = ({ items, onItemDeleted }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item) => (
-        <ItemCard key={item.id} item={item} />
+        <ItemCard 
+          key={item.id} 
+          item={item} 
+          onItemDeleted={() => onItemDeleted(item.id)}
+        />
       ))}
     </div>
   );
@@ -24,6 +28,7 @@ ItemGrid.propTypes = {
       imageUrl: PropTypes.string,
     })
   ).isRequired,
+  onItemDeleted: PropTypes.func.isRequired,
 };
 
 export default ItemGrid;

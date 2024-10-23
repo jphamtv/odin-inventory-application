@@ -52,21 +52,21 @@ const HomePage = () => {
 
   // Fetch category items when category changes
   useEffect(() => {
-    if (selectedCategory) {
-      const fetchCategoryItems = async () => {
-        try {
-          setIsLoading(true);
-          const categoryItems = await api.getItemsByCategory(selectedCategory);
-          setItems(categoryItems);
-        } catch (err) {
-          console.error('Failed to load category items:', err);
-          setError('Failed to load category items.');
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchCategoryItems();
-    }
+    const fetchItems = async () => {
+      try {
+        setIsLoading(true);
+        const itemsData = selectedCategory
+          ? await api.getItemsByCategory(selectedCategory)
+          : await api.getItems();
+        setItems(itemsData);
+      } catch (err) {
+        console.error('Failed to load items:', err);
+        setError('Failed to load items.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchItems();
   }, [selectedCategory]);
 
   // Sort items
@@ -82,6 +82,21 @@ const HomePage = () => {
         return 0;
     }
   });
+
+  const handleItemDeleted = async (itemId) => {
+    try {
+      // Optimistically update UI
+      setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    } catch (err) {
+      console.error('Failed to delete item:', err);
+      setError('Failed to delete item. Please try again.');
+      // Reload items to ensure UI is in sync with server
+      const itemsData = selectedCategory
+        ? await api.getItemsByCategory(selectedCategory)
+        : await api.getItems();
+      setItems(itemsData);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -103,7 +118,10 @@ const HomePage = () => {
       ) : sortedItems.length === 0 ? (
         <p className="text-center text-gray-500 py-8">No items found</p>
       ) : (
-        <ItemGrid items={sortedItems} />
+        <ItemGrid
+          items={sortedItems}
+          onItemDeleted={handleItemDeleted}
+        />
       )}
     </div>
   );

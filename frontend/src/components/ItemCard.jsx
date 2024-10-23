@@ -1,18 +1,37 @@
-// ItemCard.jsx
+// src/components/ItemCard.jsx
+import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import DeleteConfirmation from './DeleteConfirmation';
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item, onItemDeleted }) => {
+  const navigate = useNavigate();
   const [showActions, setShowActions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isLowStock = item.quantity < 5;
 
+  const handleEdit = () => {
+    navigate(`/items/${item.id}/edit`);
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteConfirm(false);
+    onItemDeleted();
+  };
+
   return (
-    <div
-      className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-    >
+    <>
+      <div
+        className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
+      >
+
       {/* Placeholder image or actual album cover */}
       <img
         src={item.imageUrl || "/api/placeholder/300/300"}
@@ -34,16 +53,33 @@ const ItemCard = ({ item }) => {
 
       {/* Edit/Delete buttons - show on hover */}
       {showActions && (
-        <div className="absolute top-2 right-2 flex gap-2 bg-white/90 p-1 rounded-lg">
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <Pencil size={16} />
-          </button>
-          <button className="p-1 hover:bg-gray-100 rounded text-red-500">
-            <Trash2 size={16} />
-          </button>
-        </div>
+          <div className="absolute top-2 right-2 flex gap-2 bg-white/90 p-1 rounded-lg">
+            <button 
+              onClick={handleEdit}
+              className="p-1 hover:bg-gray-100 rounded"
+            >
+              <Pencil size={16} />
+            </button>
+            <button 
+              onClick={handleDeleteClick}
+              className="p-1 hover:bg-gray-100 rounded text-red-500"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {showDeleteConfirm && (
+        <DeleteConfirmation
+          type="item"
+          id={item.id}
+          name={`${item.artist} - ${item.title}`}
+          onClose={() => setShowDeleteConfirm(false)}
+          onDelete={handleDeleteConfirm}
+        />
       )}
-    </div>
+    </>
   );
 };
 
@@ -57,8 +93,7 @@ ItemCard.propTypes = {
     quantity: PropTypes.number.isRequired,
     imageUrl: PropTypes.string,
   }).isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onItemDeleted: PropTypes.func.isRequired,
 };
 
 export default ItemCard;
