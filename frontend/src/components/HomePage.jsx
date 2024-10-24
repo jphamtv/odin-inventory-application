@@ -11,15 +11,23 @@ const LoadingSpinner = () => (
   </div>
 );
 
-const ErrorMessage = ({ message }) => (
-  <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-    <div className="flex">
-      <div className="ml-3">
-        <p className="text-sm text-red-700">{message}</p>
-      </div>
+const ErrorMessage = ({ message, onDismiss }) => (
+  <div className="bg-red-50 text-red-800 rounded-lg p-4 mb-4 flex items-center justify-between">
+    <div className="flex items-center gap-2">
+      {/* Simple X symbol for error icon */}
+      <span className="text-red-500">✕</span>
+      <p>{message}</p>
     </div>
+    {onDismiss && (
+      <button 
+        onClick={onDismiss}
+        className="text-sm text-red-600 hover:text-red-800 underline"
+      >
+        Dismiss
+      </button>
+    )}
   </div>
-);
+)
 
 const HomePage = () => {
   const [items, setItems] = useState([]);
@@ -50,25 +58,6 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  // Fetch category items when category changes
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        setIsLoading(true);
-        const itemsData = selectedCategory
-          ? await api.getItemsByCategory(selectedCategory)
-          : await api.getItems();
-        setItems(itemsData);
-      } catch (err) {
-        console.error('Failed to load items:', err);
-        setError('Failed to load items.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchItems();
-  }, [selectedCategory]);
-
   // Sort items
   const sortedItems = [...items].sort((a, b) => {
     switch (currentSort) {
@@ -82,6 +71,28 @@ const HomePage = () => {
         return 0;
     }
   });
+
+  // Function to handle category selection
+  const handleCategorySelect = async (categoryId) => {
+    try {
+      setError(null); // Reset error state
+      setSelectedCategory(categoryId);
+      setIsLoading(true);
+      
+      const itemsData = categoryId
+        ? await api.getItemsByCategory(categoryId)
+        : await api.getItems();
+        
+      setItems(itemsData);
+    } catch (err) {
+      console.error('Failed to load items:', err);
+      setError('Failed to load items. Please try again.');
+      // On error, reset items to empty array to prevent showing stale data
+      setItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleItemDeleted = async (itemId) => {
     try {
@@ -103,7 +114,7 @@ const HomePage = () => {
       <CategoryNav
         categories={categories}
         selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
+        onSelectCategory={handleCategorySelect}
       />
       
       <SortButtons
@@ -114,7 +125,10 @@ const HomePage = () => {
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
-        <ErrorMessage message={error} />
+        <ErrorMessage
+          message={error}
+          onDismiss={() => setError(null)}
+        />
       ) : sortedItems.length === 0 ? (
         <p className="text-center text-gray-500 py-8">No items found</p>
       ) : (
@@ -128,7 +142,8 @@ const HomePage = () => {
 };
 
 ErrorMessage.propTypes = {
- message: PropTypes.string.isRequired
+  message: PropTypes.string.isRequired,
+  onDismiss: PropTypes.func
 };
 
 export default HomePage;
