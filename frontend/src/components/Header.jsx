@@ -9,7 +9,7 @@ const Header = () => {
           to="/" 
           className="text-2xl font-bold hover:text-gray-700 transition-colors"
         >
-          Vinyl
+          Vinyl Inventory App
         </Link>
         
         <div className="flex gap-4">
