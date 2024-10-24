@@ -1,7 +1,6 @@
 // controllers/itemController.js
 const Item = require('../models/item');
 const { body, validationResult } = require('express-validator');
-const { transformToCamelCase, transformToSnakeCase } = require('../utils/caseTransformer');
 
 const lengthErr = 'must be between 1 and 200 characters'
 const matchErr = 'contains invalid characters'
@@ -25,15 +24,19 @@ const validateItem = [
   body('price')
     .isFloat({ min: 0 })
     .withMessage('Price must be a non-negative number'),
+  body('category_id') 
+    .isInt({ min: 1 })
+    .withMessage('Category ID must be a positive integer'),
   body('img_url')
-    .optional()
+    .optional({ nullable: true })
+    .if((value) => value !== null && value !== '')
     .isURL().withMessage('Image URL must be a valid URL'),
 ];
 
 async function getAllItems(req, res) {
   try {
     const items = await Item.getAll();
-    res.json(transformToCamelCase(items));
+    res.json(items);
   } catch (error) {
     console.error('Error fetching items', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -45,7 +48,7 @@ async function getItemById(req, res) {
     const itemId = req.params.id;
     const item = await Item.getById(itemId);
     if (item) {
-      res.json(transformToCamelCase(item));
+      res.json(item);
     } else {
       res.status(404).json({ message: 'Item not found' });
     }
@@ -60,7 +63,7 @@ async function getItemsByCategory(req, res) {
     const categoryId = req.params.id;
     const items = await Item.getByCategory(categoryId);
     if (items && items.length > 0) {
-      res.json(transformToCamelCase(items));
+      res.json(items);
     } else {
       res.status(404).json({ message: 'No items found for this category' });
     }
@@ -81,7 +84,7 @@ const createItem = [
 
       const { artist, title, label, year, quantity, price, categoryId, imgUrl } = req.body;
       const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id: categoryId, img_url: imgUrl });
-      res.status(201).json({ message: 'Item created successfully', item: transformToCamelCase(newItem) });
+      res.status(201).json({ message: 'Item created successfully', item: newItem });
     } catch (error) {
       console.error('Error creating item:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -102,7 +105,7 @@ const updateItem = [
       const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
       const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id, img_url });
       if (updatedItem) {
-        res.json({ message: 'Item updated successfully', item: transformToCamelCase(updatedItem) });
+        res.json({ message: 'Item updated successfully', item: updatedItem });
       } else {
         res.status(404).json({ message: 'Item not found' });
       }
@@ -119,7 +122,7 @@ async function adjustItemQuantity(req, res) {
     const { adjustment } = req.body;
     const updatedItem = await Item.adjustQuantity(itemId, adjustment);
     if (updatedItem) {
-      res.json({ message: 'Item quantity adjusted successfully', item: transformToCamelCase(updatedItem) });
+      res.json({ message: 'Item quantity adjusted successfully', item: updatedItem });
     } else {
       res.status(404).json({ message: 'Item not found' });
     }
@@ -135,7 +138,7 @@ async function updateItemPrice(req, res) {
     const { price } = req.body;
     const updatedItem = await Item.updatePrice(itemId, price);
     if (updatedItem) {
-      res.json({ message: 'Item price updated successfully', item: transformToCamelCase(updatedItem) });
+      res.json({ message: 'Item price updated successfully', item: updatedItem });
     } else {
       res.status(404).json({ message: 'Item not found' });
     }

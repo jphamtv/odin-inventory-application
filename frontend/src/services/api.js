@@ -1,28 +1,42 @@
 // src/services/api.js
+import { transformToSnakeCase, transformToCamelCase } from '../utils/caseTransformer';
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Helper to handle response and errors consistently
 async function handleResponse(response) {
   if (!response.ok) {
-    // Get error message from server or use default
-    const error = await response.json().catch(() => ({
-      message: 'An error occurred'
-    }));
-    throw new Error(error.message);
+    const error = await response.json();
+    console.error('API Error Response:', error); // Log the entire error object
+    console.error('Error status:', response.status);
+    console.error('Error details:', error.errors); // Show validation errors if any
+    throw new Error(error.errors?.[0]?.msg || error.message || 'An error occurred');
   }
-  return response.json();
+  const data = await response.json();
+  return transformToCamelCase(data);
 }
 
 // Basic fetch wrapper with common configuration
 async function fetchApi(endpoint, options = {}) {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    ...options
-  });
-  return handleResponse(response);
+  try {
+    if (options.body) {
+      const parsedBody = JSON.parse(options.body);
+      const transformedBody = transformToSnakeCase(parsedBody);
+      options.body = JSON.stringify(transformedBody);
+    }
+
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 }
 
 // API methods

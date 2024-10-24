@@ -1,6 +1,10 @@
-// utils/caseTransformer.js
+// src/utils/caseTransformer.js
 const toCamelCase = (str) => {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+};
+
+const toSnakeCase = (str) => {
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
 const transformKeys = (obj, transformer) => {
@@ -19,7 +23,6 @@ const transformKeys = (obj, transformer) => {
 };
 
 const transformToCamelCase = (obj) => transformKeys(obj, toCamelCase);
+const transformToSnakeCase = (obj) => transformKeys(obj, toSnakeCase);
 
-module.exports = {
-  transformToCamelCase,
-};
+export { transformToCamelCase, transformToSnakeCase };
