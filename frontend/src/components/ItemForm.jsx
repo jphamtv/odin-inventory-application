@@ -20,34 +20,34 @@ const ItemForm = () => {
  });
 
  // Fetch categories for dropdown and item data if editing
- useEffect(() => {
-   const fetchData = async () => {
-     try {
-       // Fetch categories
-       const categoryData = await api.getCategories();
-       setCategories(categoryData);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // Fetch categories
+      const categoryData = await api.getCategories();
+      setCategories(categoryData);
 
-       // If editing, fetch item data
-       if (id) {
-         const item = await api.getItem(id);
-         setFormData({
-           artist: item.artist,
-           title: item.title,
-           label: item.label,
-           year: item.year,
-           quantity: item.quantity,
-           price: item.price,
-           categoryId: item.categoryId,
-           imgUrl: item.imgUrl
-         });
-       }
-     } catch (err) {
-       console.error('Failed to fetch data:', err);
-       setError('Failed to load required data');
-     }
-   };
-   fetchData();
- }, [id]);
+      // If editing, fetch item data
+      if (id) {
+        const item = await api.getItem(id);
+        setFormData({
+          artist: item.artist,
+          title: item.title,
+          label: item.label,
+          year: item.year,
+          quantity: item.quantity,
+          price: item.price,
+          categoryId: item.categoryId || item.category_id, // Handle both camelCase and snake_case
+          imgUrl: item.imgUrl || item.img_url // Handle both camelCase and snake_case
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch data:', err);
+      setError('Failed to load required data');
+    }
+  };
+  fetchData();
+}, [id]);
 
  const handleChange = (e) => {
    const { name, value } = e.target;
@@ -61,19 +61,31 @@ const ItemForm = () => {
  };
 
  const handleSubmit = async (e) => {
-   e.preventDefault();
-   try {
-     if (id) {
-       await api.updateItem(id, formData);
-     } else {
-       await api.createItem(formData);
-     }
-     navigate('/');
-   } catch (err) {
-     console.error(`Item ${id ? 'update' : 'creation'} failed:`, err);
-     setError(`Failed to ${id ? 'update' : 'create'} item`);
-   }
- };
+  e.preventDefault();
+  try {
+    // Transform the data to match the API expectations
+    const submitData = {
+      artist: formData.artist,
+      title: formData.title,
+      label: formData.label,
+      year: formData.year,
+      quantity: formData.quantity,
+      price: formData.price,
+      category_id: Number(formData.categoryId), // Ensure it's a number and using snake_case
+      img_url: formData.imgUrl
+    };
+
+    if (id) {
+      await api.updateItem(id, submitData);
+    } else {
+      await api.createItem(submitData);
+    }
+    navigate('/');
+  } catch (err) {
+    console.error(`Item ${id ? 'update' : 'creation'} failed:`, err);
+    setError(`Failed to ${id ? 'update' : 'create'} item`);
+  }
+};
 
  return (
    <div className="max-w-2xl mx-auto py-8">
