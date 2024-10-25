@@ -92,6 +92,10 @@ const ItemForm = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/');
+  };
+
   return (
     <div className="max-w-2xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">
@@ -208,12 +212,21 @@ const ItemForm = () => {
           />
         </div>
 
-        <button 
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {id ? 'Update Item' : 'Save Item'}
-        </button>
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            {id ? 'Update Item' : 'Save Item'}
+          </button>
+        </div>
       </form>
     </div>
   );
