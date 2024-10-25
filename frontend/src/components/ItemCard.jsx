@@ -34,7 +34,7 @@ const ItemCard = ({ item, onItemDeleted }) => {
 
       {/* Placeholder image or actual album cover */}
       <img
-        src={item.imageUrl || "/api/placeholder/300/300"}
+        src={item.imgUrl || "/api/placeholder/300/300"}
         alt={`${item.title} cover`}
         className="w-full aspect-square object-cover bg-gray-100"
       />
@@ -91,7 +91,7 @@ ItemCard.propTypes = {
     label: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     quantity: PropTypes.number.isRequired,
-    imageUrl: PropTypes.string,
+    imgUrl: PropTypes.string,
   }).isRequired,
   onItemDeleted: PropTypes.func.isRequired,
 };

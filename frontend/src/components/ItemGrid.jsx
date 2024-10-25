@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ItemCard from './ItemCard';
 
 const ItemGrid = ({ items, onItemDeleted }) => {
+  console.log(items);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item) => (
@@ -25,7 +26,7 @@ ItemGrid.propTypes = {
       label: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       quantity: PropTypes.number.isRequired,
-      imageUrl: PropTypes.string,
+      imgUrl: PropTypes.string,
     })
   ).isRequired,
   onItemDeleted: PropTypes.func.isRequired,
