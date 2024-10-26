@@ -7,7 +7,7 @@ const SortButtons = ({ onSort, currentSort }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="mb-8 flex justify-between items-center">
+    <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between">
       <div>
         <h2 className="text-lg font-medium mb-4">Sort By</h2>
         <div className="flex gap-2">
@@ -27,13 +27,16 @@ const SortButtons = ({ onSort, currentSort }) => {
         </div>
       </div>
 
-      <button
-        onClick={() => navigate('/items/new')}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-      >
-        <Plus size={20} />
-        Add Item
-      </button>
+      {/* Add Item button now aligns with sort buttons */}
+      <div className="flex items-end">
+        <button
+          onClick={() => navigate('/items/new')}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          <Plus size={20} />
+          Add Item
+        </button>
+      </div>
     </div>
   );
 };
