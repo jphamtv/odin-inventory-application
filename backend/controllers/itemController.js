@@ -82,8 +82,8 @@ const createItem = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { artist, title, label, year, quantity, price, categoryId, imgUrl } = req.body;
-      const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id: categoryId, img_url: imgUrl });
+      const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
+      const newItem = await Item.insertNew({ artist, title, label, year, quantity, price, category_id, img_url });
       res.status(201).json({ message: 'Item created successfully', item: newItem });
     } catch (error) {
       console.error('Error creating item:', error);

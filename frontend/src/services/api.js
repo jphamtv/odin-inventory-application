@@ -20,8 +20,7 @@ async function handleResponse(response) {
 async function fetchApi(endpoint, options = {}) {
   try {
     if (options.body) {
-      const parsedBody = JSON.parse(options.body);
-      const transformedBody = transformToSnakeCase(parsedBody);
+      const transformedBody = transformToSnakeCase(options.body);
       options.body = JSON.stringify(transformedBody);
     }
 
@@ -86,14 +85,14 @@ export const api = {
   async createItem(data) {
     return fetchApi('/items', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: data
     });
   },
 
   async updateItem(id, data) {
     return fetchApi(`/items/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: data
     });
   },
 
