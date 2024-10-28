@@ -99,14 +99,14 @@ export const api = {
   async adjustItemQuantity(id, adjustment) {
     return fetchApi(`/items/${id}/quantity`, {
       method: 'PATCH',
-      body: adjustment
+      body: { adjustment }
     });
   },
 
   async updateItemPrice(id, price) {
     return fetchApi(`/items/${id}/price`, {
       method: 'PATCH',
-      body: price
+      body: { price }
     });
   },
 
