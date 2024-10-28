@@ -4,43 +4,56 @@ import PropTypes from 'prop-types';
 import { api } from '../services/api';
 
 const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
- const [error, setError] = useState('');
- const [itemCount, setItemCount] = useState(0);
+  const [error, setError] = useState('');
+  const [itemCount, setItemCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkItems = async () => {
       // Only check for items if it's a category
       if (type === 'category') {
         try {
+          setIsLoading(true);
           const items = await api.getItemsByCategory(id);
+          // API now returns empty array instead of throwing error
           setItemCount(items.length);
         } catch (err) {
           console.error('Failed to check category items:', err);
-          setError('Failed to check category items');
+          // Only set error for unexpected failures
+          if (err.status !== 404) {
+            setError('Failed to check category items');
+          }
+        } finally {
+          setIsLoading(false);
         }
       }
     };
     checkItems();
-  }, [id, type]);  
+  }, [id, type]);
 
   const handleDelete = async () => {
     try {
-      if (type === 'category') {
-        if (itemCount > 0) {
-          let uncategorized = await api.getCategories()
-            .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
-          
-          if (!uncategorized) {
-            const response = await api.createCategory({ 
-              name: 'Uncategorized', 
-              description: 'Default category for uncategorized items' 
-            });
-            uncategorized = response.category;  // Access the category from response
-          }
-          
-          // Make sure we're passing the ID correctly
-          await api.updateItemsCategory(id, uncategorized.id);
+      if (type === 'category' && itemCount > 0) {
+        // First find or create Uncategorized category
+        let uncategorized = await api.getCategories()
+          .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
+        
+        if (!uncategorized) {
+          const response = await api.createCategory({ 
+            name: 'Uncategorized', 
+            description: 'Default category for uncategorized items' 
+          });
+          uncategorized = response.category;
+          console.log('Uncategorized category created:', uncategorized);
         }
+
+        // Move items to uncategorized category first
+        console.log('Items reassigned response:', id, uncategorized.id);
+        await api.updateItemsCategory(id, uncategorized.id);
+      }
+      
+      // Only proceed with category deletion after items are moved
+      if (type === 'category') {
         await api.deleteCategory(id);
       } else {
         await api.deleteItem(id);
@@ -48,46 +61,55 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
       onDelete();
     } catch (err) {
       console.error('Delete failed:', err);
-      setError(`Failed to delete ${type}`);
+      setError(`Failed to delete ${type}. ${err.message}`);
     }
   };
 
  return (
-   <div className="fixed inset-0 flex items-center justify-center z-50">
-     <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-     <div className="relative bg-white p-6 rounded-lg max-w-md w-full shadow-xl">
-       <h2 className="text-xl font-bold mb-4">Delete {type}?</h2>
-       
-       <p className="mb-4">
-         Are you sure you want to delete "{name}"?
-       </p>
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <div className="relative bg-white p-6 rounded-lg max-w-md w-full shadow-xl">
+        <h2 className="text-xl font-bold mb-4">Delete {type}?</h2>
+        
+        {isLoading ? (
+          <p className="mb-4">Checking category contents...</p>
+        ) : (
+          <>
+            <p className="mb-4">
+              Are you sure you want to delete "{name}"?
+            </p>
 
-       {type === 'category' && itemCount > 0 && (
-         <p className="mb-4 text-yellow-600">
-           Warning: This category contains {itemCount} items. 
-           They will be moved to "Uncategorized".
-         </p>
-       )}
+            {type === 'category' && itemCount > 0 && (
+              <p className="mb-4 text-yellow-600">
+                Warning: This category contains {itemCount} items. 
+                They will be moved to "Uncategorized".
+              </p>
+            )}
+          </>
+        )}
 
-       {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && (
+          <p className="text-red-500 mb-4">{error}</p>
+        )}
 
-       <div className="flex justify-end gap-4">
-         <button
-           onClick={onClose}
-           className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-         >
-           Cancel
-         </button>
-         <button
-           onClick={handleDelete}
-           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-         >
-           Delete
-         </button>
-       </div>
-     </div>
-   </div>
- );
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            disabled={isLoading}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 DeleteConfirmation.propTypes = {

@@ -1,4 +1,4 @@
-// routes/categoriesRouter.js
+// routes/itemsRouter.js
 const Router = require('express');
 const router = Router();
 const itemController = require('../controllers/itemController');

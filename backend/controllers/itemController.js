@@ -45,8 +45,8 @@ async function getAllItems(req, res) {
 
 async function getItemById(req, res) {
   try {
-    const itemId = req.params.id;
-    const item = await Item.getById(itemId);
+    const id = req.params.id;
+    const item = await Item.getById(id);
     if (item) {
       res.json(item);
     } else {
@@ -60,13 +60,10 @@ async function getItemById(req, res) {
 
 async function getItemsByCategory(req, res) {
   try {
-    const categoryId = req.params.id;
-    const items = await Item.getByCategory(categoryId);
-    if (items && items.length > 0) {
-      res.json(items);
-    } else {
-      res.status(404).json({ message: 'No items found for this category' });
-    }
+    const category_id = req.params.id;
+    const items = await Item.getByCategory(category_id);
+    // Return empty array instead of 404 when no items found
+    res.json(items || []);
   } catch (error) {
     console.error('Error fetching items by category: ', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -101,9 +98,9 @@ const updateItem = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const itemId = req.params.id;    
+      const id = req.params.id;    
       const { artist, title, label, year, quantity, price, category_id, img_url } = req.body;
-      const updatedItem = await Item.updateById(itemId, { artist, title, label, year, quantity, price, category_id, img_url });
+      const updatedItem = await Item.updateById(id, { artist, title, label, year, quantity, price, category_id, img_url });
       if (updatedItem) {
         res.json({ message: 'Item updated successfully', item: updatedItem });
       } else {
@@ -118,10 +115,14 @@ const updateItem = [
 
 async function reassignCategoryItems(req, res) {
   try {
-    const oldCategoryId = req.params.id;
-    const { newCategoryId } = req.body;
+    const old_category_id = req.params.oldCategoryId; // <-- verify this
+    const { new_category_id } = req.body;
+    console.log('Req Body:', req.body);
+    console.log('Reassigning items:', { old_category_id, new_category_id });
     
-    const updatedCount = await Item.updateItemsCategory(oldCategoryId, newCategoryId);
+    const updatedCount = await Item.updateItemsCategory(old_category_id, new_category_id);
+    console.log('Updated items count:', updatedCount);
+    
     res.json({ 
       message: 'Items reassigned successfully', 
       updatedCount 
@@ -134,9 +135,9 @@ async function reassignCategoryItems(req, res) {
 
 async function adjustItemQuantity(req, res) {
   try {
-    const itemId = req.params.id;
+    const id = req.params.id;
     const { adjustment } = req.body;
-    const updatedItem = await Item.adjustQuantity(itemId, adjustment);
+    const updatedItem = await Item.adjustQuantity(id, adjustment);
     if (updatedItem) {
       res.json({ message: 'Item quantity adjusted successfully', item: updatedItem });
     } else {
@@ -150,9 +151,9 @@ async function adjustItemQuantity(req, res) {
 
 async function updateItemPrice(req, res) {
   try {
-    const itemId = req.params.id;
+    const id = req.params.id;
     const { price } = req.body;
-    const updatedItem = await Item.updatePrice(itemId, price);
+    const updatedItem = await Item.updatePrice(id, price);
     if (updatedItem) {
       res.json({ message: 'Item price updated successfully', item: updatedItem });
     } else {
@@ -166,8 +167,8 @@ async function updateItemPrice(req, res) {
 
 async function deleteItem(req, res) {
   try {
-    const itemId = req.params.id; 
-    const deleted = await Item.deleteById(itemId); // deleted is boolean value
+    const id = req.params.id; 
+    const deleted = await Item.deleteById(id); // deleted is boolean value
     if (deleted) {
       res.json({ message: 'Item deleted successfully' });
     } else {

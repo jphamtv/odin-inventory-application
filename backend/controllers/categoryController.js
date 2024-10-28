@@ -5,12 +5,12 @@ const { body, validationResult } = require('express-validator');
 const validateCategory = [
   body('name').trim()
     .isLength({ min: 1, max: 200 }).withMessage(`Name must be between 1 and 200 characters`)
-    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Name can only contain letters, numbers, and spaces'),
+    .matches(/^[a-z0-9 .,!?'-/]+$/i).withMessage('Name can only contain letters, numbers, and spaces'),
   body('description').trim()
     .optional({ nullable: true })
     .if((value) => value !== null && value !== '')
     .isLength({ max: 200 }).withMessage(`Description must not exceed 200 characters`)
-    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Description contains invalid characters')
+    .matches(/^[a-z0-9 .,!?'-/]+$/i).withMessage('Description contains invalid characters')
     .escape()
 ];
 
@@ -85,7 +85,8 @@ const updateCategory = [
 async function deleteCategory(req, res) {
   try {
     const categoryId = req.params.id; 
-    const deleted = await Category.deleteById(categoryId); // deleted is boolean value
+    const deleted = await Category.deleteById(categoryId);
+    
     if (deleted) {
       res.json({ message: 'Category deleted successfully' });
     } else {
@@ -93,7 +94,14 @@ async function deleteCategory(req, res) {
     }
   } catch (error) {
     console.error('Error deleting category: ', error);
-    res.status(500).json({ error: 'Internal server error' });
+    // More specific error message based on the error type
+    if (error.code === '23503') { // Foreign key violation
+      res.status(400).json({ 
+        error: 'Cannot delete category while it contains items. Please move items first.' 
+      });
+    } else {
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 

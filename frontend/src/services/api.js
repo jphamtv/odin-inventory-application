@@ -5,14 +5,15 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Helper to handle response and errors consistently
 async function handleResponse(response) {
-  if (!response.ok) {
-    const error = await response.json();
-    console.error('API Error Response:', error); // Log the entire error object
-    console.error('Error status:', response.status);
-    console.error('Error details:', error.errors); // Show validation errors if any
-    throw new Error(error.errors?.[0]?.msg || error.message || 'An error occurred');
-  }
   const data = await response.json();
+  
+  if (!response.ok) {
+    const error = new Error(data.errors?.[0]?.msg || data.message || 'An error occurred');
+    error.status = response.status;
+    error.details = data;
+    throw error;
+  }
+  
   return transformToCamelCase(data);
 }
 
@@ -97,11 +98,13 @@ export const api = {
   },
 
   async updateItemsCategory(oldCategoryId, newCategoryId) {
-  return fetchApi(`/items/category/${oldCategoryId}/reassign`, {
-    method: 'PATCH',
-    body: { newCategoryId }
-  });
-},
+    const body = { newCategoryId }; 
+    console.log('API sending:', body);
+    return fetchApi(`/items/category/${oldCategoryId}/reassign`, {
+      method: 'PATCH',
+      body
+    });
+  },
 
   async adjustItemQuantity(id, adjustment) {
     return fetchApi(`/items/${id}/quantity`, {

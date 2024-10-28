@@ -20,13 +20,13 @@ async function getById(id) {
   return rows[0] || null;
 }
 
-async function getByCategory(categoryId) {
+async function getByCategory(category_id) {
   const { rows } = await db.query(`
     SELECT i.*, c.name as genre 
     FROM items i
     JOIN categories c ON i.category_id = c.id
     WHERE i.category_id=$1
-    `, [categoryId]);
+    `, [category_id]);
   return rows || null;
 }
 
@@ -50,12 +50,12 @@ async function updateById(id, { artist, title, label, year, quantity, price, cat
   return rows[0] || null;
 }
 
-async function updateItemsCategory(oldCategoryId, newCategoryId) {
+async function updateItemsCategory(old_category_id, new_category_id) {
   const { rowCount } = await db.query(`
     UPDATE items 
     SET category_id = $1 
     WHERE category_id = $2
-    `, [newCategoryId, oldCategoryId]
+    `, [new_category_id, old_category_id]
   );
   return rowCount;
 }
@@ -71,13 +71,13 @@ async function adjustQuantity(id, adjustment) {
   return rows[0] || null;
 }
 
-async function updatePrice(id, newPrice) {
+async function updatePrice(id, new_price) {
   const { rows } = await db.query(`
     UPDATE items
     SET price = $1
     WHERE id = $2
     RETURNING *
-    `, [newPrice, id]
+    `, [new_price, id]
   );
   return rows[0] || null;
 }
