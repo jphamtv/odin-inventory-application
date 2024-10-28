@@ -1,10 +1,24 @@
 // src/components/CategoryNav.jsx
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import { Settings } from 'lucide-react';
 
 const CategoryNav = ({ categories, selectedCategory, onSelectCategory }) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-medium mb-4">Categories</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-medium">Categories</h2>
+        <button
+          onClick={() => navigate('/categories')}
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          title="Manage Categories"
+        >
+          <Settings size={18} />
+        </button>
+      </div>
+
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => onSelectCategory(null)}
