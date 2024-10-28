@@ -21,36 +21,36 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
       }
     };
     checkItems();
-  }, [id, type]);  // Added type to dependencies
+  }, [id, type]);  
 
- const handleDelete = async () => {
-   try {
-     if (type === 'category') {
-       // Check/create uncategorized category if there are items
-       if (itemCount > 0) {
-         let uncategorized = await api.getCategories()
-           .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
-         
-         if (!uncategorized) {
-           uncategorized = await api.createCategory({ 
-             name: 'Uncategorized', 
-             description: 'Default category for uncategorized items' 
-           });
-         }
-         
-         // Move items before deleting category
-         await api.updateItemsCategory(id, uncategorized.id);
-       }
-       await api.deleteCategory(id);
-     } else {
-       await api.deleteItem(id);
-     }
-     onDelete();
-   } catch (err) {
-     console.error('Delete failed:', err);
-     setError(`Failed to delete ${type}`);
-   }
- };
+  const handleDelete = async () => {
+    try {
+      if (type === 'category') {
+        if (itemCount > 0) {
+          let uncategorized = await api.getCategories()
+            .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
+          
+          if (!uncategorized) {
+            const response = await api.createCategory({ 
+              name: 'Uncategorized', 
+              description: 'Default category for uncategorized items' 
+            });
+            uncategorized = response.category;  // Access the category from response
+          }
+          
+          // Make sure we're passing the ID correctly
+          await api.updateItemsCategory(id, uncategorized.id);
+        }
+        await api.deleteCategory(id);
+      } else {
+        await api.deleteItem(id);
+      }
+      onDelete();
+    } catch (err) {
+      console.error('Delete failed:', err);
+      setError(`Failed to delete ${type}`);
+    }
+  };
 
  return (
    <div className="fixed inset-0 flex items-center justify-center z-50">

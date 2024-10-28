@@ -116,6 +116,22 @@ const updateItem = [
   }
 ];
 
+async function reassignCategoryItems(req, res) {
+  try {
+    const oldCategoryId = req.params.id;
+    const { newCategoryId } = req.body;
+    
+    const updatedCount = await Item.updateItemsCategory(oldCategoryId, newCategoryId);
+    res.json({ 
+      message: 'Items reassigned successfully', 
+      updatedCount 
+    });
+  } catch (error) {
+    console.error('Error reassigning items:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 async function adjustItemQuantity(req, res) {
   try {
     const itemId = req.params.id;
@@ -169,6 +185,7 @@ module.exports = {
   getItemsByCategory,
   createItem,
   updateItem,
+  reassignCategoryItems,
   adjustItemQuantity,
   updateItemPrice,
   deleteItem,

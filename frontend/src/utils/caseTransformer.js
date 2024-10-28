@@ -7,10 +7,20 @@ const toSnakeCase = (str) => {
   return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 };
 
+
 const transformKeys = (obj, transformer) => {
+  // Handle null and undefined
+  if (obj == null) {
+    return obj;
+  }
+  
+  // Handle arrays
   if (Array.isArray(obj)) {
     return obj.map(v => transformKeys(v, transformer));
-  } else if (obj !== null && obj.constructor === Object) {
+  }
+  
+  // Handle objects
+  if (typeof obj === 'object' && obj.constructor === Object) {
     return Object.keys(obj).reduce(
       (result, key) => ({
         ...result,
@@ -19,6 +29,8 @@ const transformKeys = (obj, transformer) => {
       {},
     );
   }
+  
+  // Return primitive values as-is
   return obj;
 };
 

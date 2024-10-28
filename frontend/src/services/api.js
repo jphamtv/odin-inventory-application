@@ -96,6 +96,13 @@ export const api = {
     });
   },
 
+  async updateItemsCategory(oldCategoryId, newCategoryId) {
+  return fetchApi(`/items/category/${oldCategoryId}/reassign`, {
+    method: 'PATCH',
+    body: { newCategoryId }
+  });
+},
+
   async adjustItemQuantity(id, adjustment) {
     return fetchApi(`/items/${id}/quantity`, {
       method: 'PATCH',

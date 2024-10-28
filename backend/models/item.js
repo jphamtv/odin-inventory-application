@@ -50,6 +50,16 @@ async function updateById(id, { artist, title, label, year, quantity, price, cat
   return rows[0] || null;
 }
 
+async function updateItemsCategory(oldCategoryId, newCategoryId) {
+  const { rowCount } = await db.query(`
+    UPDATE items 
+    SET category_id = $1 
+    WHERE category_id = $2
+    `, [newCategoryId, oldCategoryId]
+  );
+  return rowCount;
+}
+
 async function adjustQuantity(id, adjustment) {
   const { rows } = await db.query(`
     UPDATE items
@@ -86,6 +96,7 @@ module.exports = {
   getByCategory,
   insertNew,
   updateById,
+  updateItemsCategory,
   adjustQuantity,
   updatePrice,
   deleteById,
