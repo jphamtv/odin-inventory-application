@@ -52,14 +52,14 @@ export const api = {
   async createCategory(data) {
     return fetchApi('/categories', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: data
     });
   },
 
   async updateCategory(id, data) {
     return fetchApi(`/categories/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: data
     });
   },
 
@@ -99,14 +99,14 @@ export const api = {
   async adjustItemQuantity(id, adjustment) {
     return fetchApi(`/items/${id}/quantity`, {
       method: 'PATCH',
-      body: JSON.stringify({ adjustment })
+      body: adjustment
     });
   },
 
   async updateItemPrice(id, price) {
     return fetchApi(`/items/${id}/price`, {
       method: 'PATCH',
-      body: JSON.stringify({ price })
+      body: price
     });
   },
 

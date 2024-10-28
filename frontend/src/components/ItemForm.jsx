@@ -76,8 +76,6 @@ const ItemForm = () => {
         imgUrl: formData.imgUrl
       };
 
-      console.log('Form submission data:', submitData); // Debug log
-
       if (id) {
         await api.updateItem(id, submitData);
       } else {

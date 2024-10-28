@@ -5,11 +5,12 @@ const { body, validationResult } = require('express-validator');
 const validateCategory = [
   body('name').trim()
     .isLength({ min: 1, max: 200 }).withMessage(`Name must be between 1 and 200 characters`)
-    .matches(/^[a-zA-Z0-9 ]+$/).withMessage('Name can only contain letters, numbers, and spaces'),
+    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Name can only contain letters, numbers, and spaces'),
   body('description').trim()
-    .optional()
+    .optional({ nullable: true })
+    .if((value) => value !== null && value !== '')
     .isLength({ max: 200 }).withMessage(`Description must not exceed 200 characters`)
-    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Bio contains invalid characters')
+    .matches(/^[a-z0-9 .,!?'-]+$/i).withMessage('Description contains invalid characters')
     .escape()
 ];
 
