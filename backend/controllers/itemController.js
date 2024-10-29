@@ -116,12 +116,8 @@ const updateItem = [
 async function reassignCategoryItems(req, res) {
   try {
     const old_category_id = req.params.oldCategoryId; // <-- verify this
-    const { new_category_id } = req.body;
-    console.log('Req Body:', req.body);
-    console.log('Reassigning items:', { old_category_id, new_category_id });
-    
+    const { new_category_id } = req.body; 
     const updatedCount = await Item.updateItemsCategory(old_category_id, new_category_id);
-    console.log('Updated items count:', updatedCount);
     
     res.json({ 
       message: 'Items reassigned successfully', 

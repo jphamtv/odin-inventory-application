@@ -15,11 +15,9 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
         try {
           setIsLoading(true);
           const items = await api.getItemsByCategory(id);
-          // API now returns empty array instead of throwing error
           setItemCount(items.length);
         } catch (err) {
           console.error('Failed to check category items:', err);
-          // Only set error for unexpected failures
           if (err.status !== 404) {
             setError('Failed to check category items');
           }
@@ -44,11 +42,9 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
             description: 'Default category for uncategorized items' 
           });
           uncategorized = response.category;
-          console.log('Uncategorized category created:', uncategorized);
         }
 
         // Move items to uncategorized category first
-        console.log('Items reassigned response:', id, uncategorized.id);
         await api.updateItemsCategory(id, uncategorized.id);
       }
       

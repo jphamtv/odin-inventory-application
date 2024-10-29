@@ -98,11 +98,9 @@ export const api = {
   },
 
   async updateItemsCategory(oldCategoryId, newCategoryId) {
-    const body = { newCategoryId }; 
-    console.log('API sending:', body);
     return fetchApi(`/items/category/${oldCategoryId}/reassign`, {
       method: 'PATCH',
-      body
+      body: { newCategoryId }
     });
   },
 

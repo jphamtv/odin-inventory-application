@@ -74,7 +74,7 @@ const CategoryList = () => {
 
       await api.createCategory({
         name: newCategoryName,
-        description: ''  // Optional: You could add a description field if needed
+        description: ''  
       });
       cancelAdd();
       fetchCategories();
