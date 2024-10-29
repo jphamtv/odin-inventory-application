@@ -63,6 +63,8 @@ const ItemForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any existing errors
+    
     try {
       const submitData = {
         artist: formData.artist,
@@ -83,10 +85,7 @@ const ItemForm = () => {
       navigate('/');
     } catch (err) {
       console.error(`Item ${id ? 'update' : 'creation'} failed:`, err);
-      if (err.response) {
-        console.error('Error response:', err.response.data);
-      }
-      setError(`Failed to ${id ? 'update' : 'create'} item`);
+      setError(err.message);
     }
   };
 

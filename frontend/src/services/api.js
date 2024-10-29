@@ -8,8 +8,16 @@ async function handleResponse(response) {
   const data = await response.json();
   
   if (!response.ok) {
-    const error = new Error(data.errors?.[0]?.msg || data.message || 'An error occurred');
+    const error = new Error();
     error.status = response.status;
+    
+    // Handle validation errors
+    if (data.errors && Array.isArray(data.errors)) {
+      error.message = data.errors.map(err => err.msg).join(', ');
+    } else {
+      error.message = data.message || 'An error occurred';
+    }
+    
     error.details = data;
     throw error;
   }
