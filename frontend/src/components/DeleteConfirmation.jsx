@@ -72,13 +72,13 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
         ) : (
           <>
             <p className="mb-4">
-              Are you sure you want to delete "{name}"?
+              Are you sure you want to delete &quot;{name}&quot;?
             </p>
 
             {type === 'category' && itemCount > 0 && (
               <p className="mb-4 text-yellow-600">
                 Warning: This category contains {itemCount} items. 
-                They will be moved to "Uncategorized".
+                They will be moved to &quot;Uncategorized&quot;.
               </p>
             )}
           </>

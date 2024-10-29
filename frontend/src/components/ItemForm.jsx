@@ -31,7 +31,6 @@ const ItemForm = () => {
         setCategories(categoryData);
 
         if (itemData) {
-          // All data will already be in camelCase thanks to our API layer
           setFormData({
             artist: itemData.artist,
             title: itemData.title,
@@ -84,7 +83,6 @@ const ItemForm = () => {
       navigate('/');
     } catch (err) {
       console.error(`Item ${id ? 'update' : 'creation'} failed:`, err);
-      // Add more detailed error logging
       if (err.response) {
         console.error('Error response:', err.response.data);
       }

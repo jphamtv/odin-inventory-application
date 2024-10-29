@@ -96,7 +96,7 @@ const HomePage = () => {
 
   const handleItemDeleted = async (itemId) => {
     try {
-      // Optimistically update UI
+      // Update UI
       setItems(prevItems => prevItems.filter(item => item.id !== itemId));
     } catch (err) {
       console.error('Failed to delete item:', err);
