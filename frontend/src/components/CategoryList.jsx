@@ -150,59 +150,61 @@ const CategoryList = () => {
           </div>
         )}
 
-        {/* Existing Categories */}
-        {categories.map(category => (
-          <div 
-            key={category.id}
-            className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
-          >
-            {editingId === category.id ? (
-              // Edit Mode
-              <div className="flex items-center gap-4 flex-grow">
-                <input
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="flex-grow px-3 py-1 border rounded"
-                  autoFocus
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleUpdate(category)}
-                    className="p-1 text-green-600 hover:bg-gray-100 rounded"
-                  >
-                    <Check size={18} />
-                  </button>
-                  <button
-                    onClick={cancelEdit}
-                    className="p-1 text-gray-600 hover:bg-gray-100 rounded"
-                  >
-                    <X size={18} />
-                  </button>
+        {/* Existing Categories - Now Sorted */}
+        {[...categories]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(category => (
+            <div 
+              key={category.id}
+              className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
+            >
+              {editingId === category.id ? (
+                // Edit Mode
+                <div className="flex items-center gap-4 flex-grow">
+                  <input
+                    type="text"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="flex-grow px-3 py-1 border rounded"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdate(category)}
+                      className="p-1 text-green-600 hover:bg-gray-100 rounded"
+                    >
+                      <Check size={18} />
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="p-1 text-gray-600 hover:bg-gray-100 rounded"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              // View Mode
-              <>
-                <span className="flex-grow">{category.name}</span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => startEdit(category)}
-                    className="p-1 text-gray-600 hover:bg-gray-100 rounded"
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(category)}
-                    className="p-1 text-red-500 hover:bg-gray-100 rounded"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+              ) : (
+                // View Mode
+                <>
+                  <span className="flex-grow">{category.name}</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => startEdit(category)}
+                      className="p-1 text-gray-600 hover:bg-gray-100 rounded"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(category)}
+                      className="p-1 text-red-500 hover:bg-gray-100 rounded"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
       </div>
 
       {/* Delete Confirmation Modal */}

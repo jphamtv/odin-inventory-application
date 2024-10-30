@@ -9,6 +9,11 @@ const CategoryNav = ({ categories, selectedCategory, onSelectCategory }) => {
   const navigate = useNavigate();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   
+  // Sort categories alphabetically
+  const sortedCategories = [...categories].sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
+  
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
@@ -33,7 +38,7 @@ const CategoryNav = ({ categories, selectedCategory, onSelectCategory }) => {
         >
           All
         </button>
-        {categories.map((category) => (
+        {sortedCategories.map((category) => (
           <button
             key={category.id}
             onClick={() => onSelectCategory(category.id)}

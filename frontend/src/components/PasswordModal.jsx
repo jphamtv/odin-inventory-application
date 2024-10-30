@@ -12,7 +12,8 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, action }) => {
     setError('');
     setIsVerifying(true);
 
-    // Simple password verification - in production, this would be an API call
+    // Simple password verification - in production, this would 
+    // be an API call to verify the password with the backend
     const TEMP_PASSWORD = import.meta.env.VITE_TEMP_PASSWORD;
     
     try {

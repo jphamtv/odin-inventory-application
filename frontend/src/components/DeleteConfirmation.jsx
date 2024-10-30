@@ -67,7 +67,7 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
       <div className="relative bg-white p-6 rounded-lg max-w-md w-full shadow-xl">
         <h2 className="text-xl font-bold mb-4">Delete {type}?</h2>
         
-        {isLoading ? (
+        {type === 'category' && isLoading ? (
           <p className="mb-4">Checking category contents...</p>
         ) : (
           <>
