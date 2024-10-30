@@ -4,19 +4,29 @@ import { Pencil, Trash2 } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import DeleteConfirmation from './DeleteConfirmation';
+import PasswordModal from './PasswordModal';
 
 const ItemCard = ({ item, onItemDeleted }) => {
   const navigate = useNavigate();
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
   const isLowStock = item.quantity < 5;
 
-  const handleEdit = () => {
-    navigate(`/items/${item.id}/edit`);
+  const handleActionClick = (action) => {
+    setPendingAction(action);
+    setShowPasswordModal(true);
   };
 
-  const handleDeleteClick = () => {
-    setShowDeleteConfirm(true);
+  const handlePasswordSuccess = () => {
+    setShowPasswordModal(false);
+    if (pendingAction === 'edit') {
+      navigate(`/items/${item.id}/edit`);
+    } else if (pendingAction === 'delete') {
+      setShowDeleteConfirm(true);
+    }
+    setPendingAction(null);
   };
 
   const handleDeleteConfirm = () => {
@@ -55,13 +65,13 @@ const ItemCard = ({ item, onItemDeleted }) => {
       {showActions && (
           <div className="absolute top-2 right-2 flex gap-2 bg-white/90 p-1 rounded-lg">
             <button 
-              onClick={handleEdit}
+              onClick={() => handleActionClick('edit')}
               className="p-1 hover:bg-gray-100 rounded"
             >
               <Pencil size={16} />
             </button>
             <button 
-              onClick={handleDeleteClick}
+              onClick={() => handleActionClick('delete')}
               className="p-1 hover:bg-gray-100 rounded text-red-500"
             >
               <Trash2 size={16} />
@@ -69,6 +79,17 @@ const ItemCard = ({ item, onItemDeleted }) => {
           </div>
         )}
       </div>
+
+      {/* Password modal */}
+      <PasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => {
+          setShowPasswordModal(false);
+          setPendingAction(null);
+        }}
+        onSuccess={handlePasswordSuccess}
+        action={pendingAction === 'edit' ? 'edit this item' : 'delete this item'}
+      />
 
       {showDeleteConfirm && (
         <DeleteConfirmation
