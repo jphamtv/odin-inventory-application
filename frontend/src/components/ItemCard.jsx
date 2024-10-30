@@ -10,34 +10,24 @@ const ItemCard = ({ item, onItemDeleted }) => {
   const [showActions, setShowActions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState(null);
   const isLowStock = item.quantity < 5;
 
-  const handleActionClick = (action) => {
-    setPendingAction(action);
+  const handleEditClick = () => {
     setShowPasswordModal(true);
   };
 
   const handlePasswordSuccess = () => {
     setShowPasswordModal(false);
-    if (pendingAction === 'edit') {
-      navigate(`/items/${item.id}/edit`);
-    } else if (pendingAction === 'delete') {
-      setShowDeleteConfirm(true);
-    }
-    setPendingAction(null);
+    navigate(`/items/${item.id}/edit`);
   };
 
-  const handleDeleteClick = () => {
-    handleActionClick('delete');
-  };
-
-  const handleDeleteConfirm = async () => {
+  const handleDeleteComplete = async () => {
     try {
-      await onItemDeleted(item.id); 
-      setShowDeleteConfirm(false); // Only close the confirmation modal if the deletion is successful
+      await onItemDeleted(item.id);
+      setShowDeleteConfirm(false);
     } catch (err) {
-      console.error('Delete failed in ItemCard:', err);
+      console.error('Delete failed:', err);
+      // Error will be shown in the DeleteConfirmation modal
     }
   };
 
@@ -69,13 +59,13 @@ const ItemCard = ({ item, onItemDeleted }) => {
         {showActions && (
           <div className="absolute top-2 right-2 flex gap-2 bg-white/90 p-1 rounded-lg">
             <button 
-              onClick={() => handleActionClick('edit')}
+              onClick={handleEditClick}
               className="p-1 hover:bg-gray-100 rounded"
             >
               <Pencil size={16} />
             </button>
             <button 
-              onClick={handleDeleteClick}
+              onClick={() => setShowDeleteConfirm(true)}
               className="p-1 hover:bg-gray-100 rounded text-red-500"
             >
               <Trash2 size={16} />
@@ -86,12 +76,9 @@ const ItemCard = ({ item, onItemDeleted }) => {
 
       <PasswordModal
         isOpen={showPasswordModal}
-        onClose={() => {
-          setShowPasswordModal(false);
-          setPendingAction(null);
-        }}
+        onClose={() => setShowPasswordModal(false)}
         onSuccess={handlePasswordSuccess}
-        action={pendingAction === 'edit' ? 'edit this item' : 'delete this item'}
+        action="edit this item"
       />
 
       {showDeleteConfirm && (
@@ -100,7 +87,7 @@ const ItemCard = ({ item, onItemDeleted }) => {
           id={item.id}
           name={`${item.artist} - ${item.title}`}
           onClose={() => setShowDeleteConfirm(false)}
-          onDelete={handleDeleteConfirm}
+          onDelete={handleDeleteComplete}
         />
       )}
     </>
