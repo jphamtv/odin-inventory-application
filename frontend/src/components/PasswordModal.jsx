@@ -26,6 +26,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, action }) => {
         setError('Incorrect password');
       }
     } catch (err) {
+      console.error('Error verifying password:', err);
       setError('Verification failed');
     } finally {
       setIsVerifying(false);
