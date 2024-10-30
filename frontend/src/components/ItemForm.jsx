@@ -27,6 +27,7 @@ const ItemForm = () => {
   const [artistSearch, setArtistSearch] = useState('');
   const [albumResults, setAlbumResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Fetch categories for dropdown and item data if editing
   useEffect(() => {
@@ -66,9 +67,10 @@ const ItemForm = () => {
     setIsSearching(true);
     setError('');
     setAlbumResults([]);
-
+    setHasSearched(true);
     try {
       const artist = await spotifyApi.searchArtist(artistSearch);
+      console.log('Artist:', artist);
       if (!artist) {
         setError('Artist not found');
         return;
@@ -100,6 +102,11 @@ const ItemForm = () => {
       setError('Error fetching album details');
       console.error('Album details error:', err);
     }
+  };
+
+  const handleSearchInput = (e) => {
+    setArtistSearch(e.target.value);
+    setHasSearched(false);
   };
 
   const handleChange = (e) => {
@@ -162,7 +169,7 @@ const ItemForm = () => {
               <input
                 type="text"
                 value={artistSearch}
-                onChange={(e) => setArtistSearch(e.target.value)}
+                onChange={handleSearchInput}
                 placeholder="Enter artist name"
                 className="flex-1 px-3 py-2 border rounded"
               />
@@ -201,6 +208,11 @@ const ItemForm = () => {
                   </button>
                 ))}
               </div>
+            )}
+            {!isSearching && hasSearched && albumResults.length === 0 && (
+              <p className="text-sm text-gray-600">
+                No albums found for &quot;{artistSearch}&quot;
+              </p>
             )}
           </form>
         </div>
