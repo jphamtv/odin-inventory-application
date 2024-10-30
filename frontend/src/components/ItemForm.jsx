@@ -2,10 +2,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../services/api';
+import { spotifyApi } from '../services/spotifyApi';
+import { Search } from 'lucide-react';
 
 const ItemForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const isNewItem = !id;
+
   const [error, setError] = useState('');
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
@@ -18,6 +22,11 @@ const ItemForm = () => {
     categoryId: '',
     imgUrl: ''
   });
+
+  // Spotify search states
+  const [artistSearch, setArtistSearch] = useState('');
+  const [albumResults, setAlbumResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Fetch categories for dropdown and item data if editing
   useEffect(() => {
@@ -49,6 +58,49 @@ const ItemForm = () => {
     };
     fetchData();
   }, [id]);
+
+  const handleSpotifySearch = async (e) => {
+    e.preventDefault();
+    if (!artistSearch.trim()) return;
+
+    setIsSearching(true);
+    setError('');
+    setAlbumResults([]);
+
+    try {
+      const artist = await spotifyApi.searchArtist(artistSearch);
+      if (!artist) {
+        setError('Artist not found');
+        return;
+      }
+
+      const albums = await spotifyApi.getArtistAlbums(artist.id);
+      setAlbumResults(albums);
+    } catch (err) {
+      setError('Error searching Spotify');
+      console.error('Spotify search error:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAlbumSelect = async (album) => {
+    try {
+      const details = await spotifyApi.getAlbumDetails(album.id);
+      setFormData(prev => ({
+        ...prev,
+        artist: details.artist,
+        title: details.title,
+        label: details.label || '',
+        year: details.year,
+        imgUrl: details.imgUrl || ''
+      }));
+      setAlbumResults([]); // Clear search results after selection
+    } catch (err) {
+      setError('Error fetching album details');
+      console.error('Album details error:', err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,6 +153,60 @@ const ItemForm = () => {
       
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
+      {/* Spotify Search Section - Only shown if creating new item */}
+      {isNewItem && (
+        <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+          <h2 className="text-lg font-medium mb-4">Search Spotify</h2>
+          <form onSubmit={handleSpotifySearch} className="space-y-4">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={artistSearch}
+                onChange={(e) => setArtistSearch(e.target.value)}
+                placeholder="Enter artist name"
+                className="flex-1 px-3 py-2 border rounded"
+              />
+              <button
+                type="submit"
+                disabled={isSearching}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 flex items-center gap-2"
+              >
+                <Search size={18} />
+                {isSearching ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+
+            {/* Album Results */}
+            {albumResults.length > 0 && (
+              <div className="mt-4 border rounded-lg divide-y max-h-96 overflow-y-auto">
+                {albumResults.map(album => (
+                  <button
+                    key={album.id}
+                    onClick={() => handleAlbumSelect(album)}
+                    className="w-full p-4 flex items-center gap-4 hover:bg-gray-50 text-left"
+                  >
+                    {album.imageUrl && (
+                      <img 
+                        src={album.imageUrl} 
+                        alt={album.title}
+                        className="w-16 h-16 object-cover"
+                      />
+                    )}
+                    <div>
+                      <div className="font-medium">{album.title}</div>
+                      <div className="text-sm text-gray-600">
+                        {album.artist} • {album.year}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </form>
+        </div>
+      )}
+
+      {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="artist" className="block mb-1">Artist</label>

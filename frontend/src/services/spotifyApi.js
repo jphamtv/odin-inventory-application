@@ -43,7 +43,7 @@ const createSpotifyApi = () => {
   };
 
   // Public functions that use the private token management
-  const searchArtists = async (query) => {
+  const searchArtist = async (query) => {
     try {
       const accessToken = await getToken();
       const response = await fetch(
@@ -67,7 +67,7 @@ const createSpotifyApi = () => {
     }
   };
 
-  const searchArtistAlbums = async (artistId) => {
+  const getArtistAlbums = async (artistId) => {
     try {
       const accessToken = await getToken();
       const response = await fetch(
@@ -135,8 +135,8 @@ const createSpotifyApi = () => {
 
   // Return the public functions
   return {
-    searchArtists,
-    searchArtistAlbums,
+    searchArtist,
+    getArtistAlbums,
     getAlbumDetails
   };
 };
