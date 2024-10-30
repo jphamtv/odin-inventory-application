@@ -70,7 +70,6 @@ const ItemForm = () => {
     setHasSearched(true);
     try {
       const artist = await spotifyApi.searchArtist(artistSearch);
-      console.log('Artist:', artist);
       if (!artist) {
         setError('Artist not found');
         return;

@@ -95,7 +95,6 @@ const HomePage = () => {
   };
 
   const handleItemDeleted = async (itemId) => {
-    console.log('Handling item deletion:', itemId);
     try {
       // Update UI
       setItems(prevItems => prevItems.filter(item => item.id !== itemId));
