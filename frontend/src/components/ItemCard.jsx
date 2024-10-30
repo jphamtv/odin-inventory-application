@@ -32,9 +32,13 @@ const ItemCard = ({ item, onItemDeleted }) => {
     handleActionClick('delete');
   };
 
-  const handleDeleteConfirm = () => {
-    setShowDeleteConfirm(false);
-    onItemDeleted(item.id); 
+  const handleDeleteConfirm = async () => {
+    try {
+      await onItemDeleted(item.id); 
+      setShowDeleteConfirm(false); // Only close the confirmation modal if the deletion is successful
+    } catch (err) {
+      console.error('Delete failed in ItemCard:', err);
+    }
   };
 
   return (

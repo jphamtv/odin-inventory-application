@@ -31,28 +31,22 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
 
   const handleDelete = async () => {
     try {
-      if (type === 'category' && itemCount > 0) {
-        // First find or create Uncategorized category
-        let uncategorized = await api.getCategories()
-          .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
-        
-        if (!uncategorized) {
-          const response = await api.createCategory({ 
-            name: 'Uncategorized', 
-            description: 'Default category for uncategorized items' 
-          });
-          uncategorized = response.category;
-        }
-
-        // Move items to uncategorized category first
-        await api.updateItemsCategory(id, uncategorized.id);
-      }
-      
-      // Only proceed with category deletion after items are moved
       if (type === 'category') {
+        // Keep category-specific logic
+        if (itemCount > 0) {
+          let uncategorized = await api.getCategories()
+            .then(cats => cats.find(c => c.name.toLowerCase() === 'uncategorized'));
+          
+          if (!uncategorized) {
+            const response = await api.createCategory({ 
+              name: 'Uncategorized', 
+              description: 'Default category for uncategorized items' 
+            });
+            uncategorized = response.category;
+          }
+          await api.updateItemsCategory(id, uncategorized.id);
+        }
         await api.deleteCategory(id);
-      } else {
-        await api.deleteItem(id);
       }
       onDelete();
     } catch (err) {
