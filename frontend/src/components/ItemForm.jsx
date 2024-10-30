@@ -155,7 +155,7 @@ const ItemForm = () => {
 
       {/* Spotify Search Section - Only shown if creating new item */}
       {isNewItem && (
-        <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+        <div className="mb-8 py-4 bg-gray-50 rounded-lg">
           <h2 className="text-lg font-medium mb-4">Search Spotify</h2>
           <form onSubmit={handleSpotifySearch} className="space-y-4">
             <div className="flex gap-2">
@@ -178,7 +178,7 @@ const ItemForm = () => {
 
             {/* Album Results */}
             {albumResults.length > 0 && (
-              <div className="mt-4 border rounded-lg divide-y max-h-96 overflow-y-auto">
+              <div className="mt-4 border rounded-lg divide-y max-h-96 overflow-y-auto bg-white">
                 {albumResults.map(album => (
                   <button
                     key={album.id}
