@@ -96,10 +96,7 @@ const HomePage = () => {
 
   const handleItemDeleted = async (itemId) => {
     try {
-      // First let the API handle the deletion
-      await api.deleteItem(itemId);
-
-      // Then update the UI after successful deletion
+      // Update the UI after successful deletion
       setItems(prevItems => prevItems.filter(item => item.id !== itemId));
     } catch (err) {
       console.error('Failed to delete item:', err);

@@ -44,6 +44,7 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
       setError('');
 
       // Verify password
+      // In production, this would be an API call to verify the password in the backend
       const TEMP_PASSWORD = import.meta.env.VITE_TEMP_PASSWORD;
       if (password !== TEMP_PASSWORD) {
         setError('Incorrect password');
