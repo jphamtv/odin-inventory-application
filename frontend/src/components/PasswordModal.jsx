@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import PropTypes from 'prop-types';
+
 const PasswordModal = ({ isOpen, onClose, onSuccess, action }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,8 +13,7 @@ const PasswordModal = ({ isOpen, onClose, onSuccess, action }) => {
     setIsVerifying(true);
 
     // Simple password verification - in production, this would be an API call
-    // NEVER store sensitive passwords in frontend code
-    const TEMP_PASSWORD = 'admin123'; // This is just for demo purposes
+    const TEMP_PASSWORD = import.meta.env.VITE_TEMP_PASSWORD;
     
     try {
       // Simulate API call

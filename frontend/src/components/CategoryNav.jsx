@@ -2,16 +2,19 @@
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Settings } from 'lucide-react';
+import { useState } from 'react';
+import PasswordModal from './PasswordModal';
 
 const CategoryNav = ({ categories, selectedCategory, onSelectCategory }) => {
   const navigate = useNavigate();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium">Categories</h2>
         <button
-          onClick={() => navigate('/categories')}
+          onClick={() => setShowPasswordModal(true)}
           className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           title="Manage Categories"
         >
@@ -44,6 +47,16 @@ const CategoryNav = ({ categories, selectedCategory, onSelectCategory }) => {
           </button>
         ))}
       </div>
+
+      <PasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={() => {
+          setShowPasswordModal(false);
+          navigate('/categories');
+        }}
+        action="access category management"
+      />
     </div>
   );
 };
