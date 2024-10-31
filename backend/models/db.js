@@ -5,5 +5,5 @@ require('dotenv').config();
 types.setTypeParser(types.builtins.NUMERIC, value => parseFloat(value));
 
 module.exports = new Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL + '?ssl=true'
 });

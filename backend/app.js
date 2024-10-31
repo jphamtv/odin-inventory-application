@@ -6,10 +6,22 @@ const itemsRouter = require('./routes/itemsRouter');
 require('dotenv').config()
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL
+    : 'http://localhost:5173',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
@@ -22,11 +34,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong' });
 });
 
-// Basic routing for testing
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Vinyl Inventory Management API' });
-});
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
