@@ -34,24 +34,25 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
   }, [id, type]);
 
   const handleDelete = async () => {
-    if (!password) {
-      setError('Password is required');
-      return;
+    // Only check password for item deletions
+    if (type === 'item') {
+      if (!password) {
+        setError('Password is required');
+        return;
+      }
+
+      // Verify password
+      const TEMP_PASSWORD = import.meta.env.VITE_TEMP_PASSWORD;
+      if (password !== TEMP_PASSWORD) {
+        setError('Incorrect password');
+        return;
+      }
     }
 
     try {
       setIsVerifying(true);
       setError('');
 
-      // Verify password
-      // In production, this would be an API call to verify the password in the backend
-      const TEMP_PASSWORD = import.meta.env.VITE_TEMP_PASSWORD;
-      if (password !== TEMP_PASSWORD) {
-        setError('Incorrect password');
-        return;
-      }
-
-      // Proceed with deletion
       if (type === 'category') {
         if (itemCount > 0) {
           let uncategorized = await api.getCategories()
@@ -109,19 +110,22 @@ const DeleteConfirmation = ({ type, id, name, onClose, onDelete }) => {
           </>
         )}
 
-        <div className="mb-4">
-          <label htmlFor="password" className="block mb-1">
-            Enter admin password to confirm:
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            placeholder="Enter password"
-          />
-        </div>
+        {/* Only show password field for item deletions */}
+        {type === 'item' && (
+          <div className="mb-4">
+            <label htmlFor="password" className="block mb-1">
+              Enter admin password to confirm:
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded"
+              placeholder="Enter password"
+            />
+          </div>
+        )}
 
         {error && (
           <p className="text-red-500 mb-4">{error}</p>
