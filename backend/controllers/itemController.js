@@ -8,13 +8,13 @@ const matchErr = 'contains invalid characters'
 const validateItem = [
   body('artist').trim()
     .isLength({ min: 1, max: 200 }).withMessage(`Artist name ${lengthErr}`)
-    .matches(/^[a-zA-Z0-9 .,!?'&-/]+$/i).withMessage(`Artist name ${matchErr}`),
+    .matches(/^[a-zA-Z0-9 .,:!?'&-/]+$/i).withMessage(`Artist name ${matchErr}`),
   body('title').trim()
     .isLength({ min: 1, max: 200 }).withMessage(`Title ${lengthErr}`)
-    .matches(/^[a-zA-Z0-9 .,!?'&-/]+$/i).withMessage(`Title ${matchErr}`),
+    .matches(/^[a-zA-Z0-9 .,:!?'&-/]+$/i).withMessage(`Title ${matchErr}`),
   body('label').trim()
     .isLength({ min: 1, max: 200 }).withMessage(`Label ${lengthErr}`)
-    .matches(/^[a-zA-Z0-9 .,!?'&-/]+$/i).withMessage(`Label ${matchErr}`),
+    .matches(/^[a-zA-Z0-9 .,:!?'&-/]+$/i).withMessage(`Label ${matchErr}`),
   body('year')
     .isInt({ min: 1900, max: new Date().getFullYear() })
     .withMessage(`Year must be a 4-digit number between 1900 and the current year`),

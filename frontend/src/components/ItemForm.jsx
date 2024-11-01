@@ -97,6 +97,7 @@ const ItemForm = () => {
         imgUrl: details.imgUrl || ''
       }));
       setAlbumResults([]); // Clear search results after selection
+      setHasSearched(false); // Reset the search state
     } catch (err) {
       setError('Error fetching album details');
       console.error('Album details error:', err);
@@ -306,7 +307,7 @@ const ItemForm = () => {
             className="w-full px-3 py-2 border rounded"
           >
             <option value="">Select a category</option>
-            {categories.map(category => (
+            {[...categories].sort((a, b) => a.name.localeCompare(b.name)).map(category => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
